@@ -13,12 +13,14 @@ function loadScript(url){
   console.log(url)
 }
 
+
 class App extends Component {
   
 
   state = {
     map: {},
-    libraries: []
+    libraries: [],
+    originalLibraries: []
   }
 
 
@@ -56,7 +58,8 @@ class App extends Component {
       /*console.log(response.data.response.venues[0].location.lat)*/
       /*console.log('success')*/
       this.setState({
-        libraries: response.data.response.venues
+        libraries: response.data.response.venues,
+        originalLibraries: response.data.response.venues
       },
       this.srcForMap())
 
@@ -101,6 +104,7 @@ class App extends Component {
   }
 
   setMarkers = (locs) => {
+    let markers = []
     this.state.libraries.forEach((library,index) => {
       let marker = new window.google.maps.Marker({
         position: {lat: locs[index].lat, lng: locs[index].lng},
@@ -108,24 +112,33 @@ class App extends Component {
         id: index,
         map: this.state.map
       })
+      markers.push(marker)
     })
   }
 
   searchQuery = (query) => {
       let queryResult = []
-      this.state.libraries.forEach(library => {
-        if(library.name.toLowerCase().includes(query.toLowerCase())){
-          queryResult.push(library)
-        }
-      })
+      if (!query){
+        this.setState({
+          libraries: this.state.originalLibraries
+        })
+        this.srcForMap()
+      }
+      else {
+        this.state.libraries.forEach(library => {
+          if(library.name.toLowerCase().includes(query.toLowerCase())){
+            queryResult.push(library)
+          }
+        })
 
-      this.setState({
-        libraries: queryResult
-      })
+        this.setState({
+          libraries: queryResult
+        })
 
-      this.srcForMap()
-
+        this.srcForMap()
+      }
     }
+
 
   render() {
     return (
