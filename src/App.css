@@ -28,11 +28,32 @@
   padding: 0;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+
+@media screen and (min-width: 768px) {
+
+  .App {
+    display: flex;
+    flex-direction: row;
   }
-  to {
-    transform: rotate(360deg);
+
+  .sidebar {
+    width: 30%;
   }
+
+  .map-container {
+    width: 70%;
+  }
+
+  #map {
+    height: 100%;
+  }
+
+
+
+
+
+
 }
+
+
+

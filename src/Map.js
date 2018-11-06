@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import './App.css';
-import Marker from './Marker'
-
+import Marker from './Marker';
+import PropTypes from 'prop-types';
 
 
 function loadScript(url){
@@ -14,10 +14,12 @@ function loadScript(url){
   console.log(url)
 }
 
-
-
 class Map extends Component {
   
+  static propTypes = {
+    allLibraries: PropTypes.array.isRequired,
+    map: PropTypes.object.isRequired
+  }
 
   componentDidMount(){
     this.srcForMap()
@@ -36,7 +38,7 @@ class Map extends Component {
     this.setState({
       map: map
     })
-    console.log(this.state.map)
+    console.log(this.props.allLibraries)
     
   }
 
@@ -44,8 +46,11 @@ class Map extends Component {
 
 
   render() {
+
+    const { map, allLibraries } = this.props
+
     return (
-      <div className="MapComponent">
+      <div className="map-container">
         <div id="map"></div>
       	<h3>Map goes here</h3>
         <Marker 

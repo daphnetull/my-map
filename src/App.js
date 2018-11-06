@@ -4,8 +4,6 @@ import './App.css';
 import Map from './Map'
 
 
-
-
 class App extends Component {
   
 
@@ -34,34 +32,27 @@ class App extends Component {
       query: "Library",
       near: "Indianapolis",
       v: '20180323'
-  }
+    }
 
   // https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
   
-  axios.get(endPoint + new URLSearchParams(parameters))
-    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/then
-    .then(response => {
-      // Code for handling API response         
-      /*console.log(response.data.response.venues[0].location.lat)*/
-      /*console.log('success')*/
-      this.setState({
-        libraries: response.data.response.venues,
-        originalLibraries: response.data.response.venues
+    axios.get(endPoint + new URLSearchParams(parameters))
+      // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/then
+      .then(response => {
+        // Code for handling API response         
+        /*console.log(response.data.response.venues[0].location.lat)*/
+        /*console.log('success')*/
+        this.setState({
+          libraries: response.data.response.venues,
+          originalLibraries: response.data.response.venues
+        })
+/*        console.log(this.state.libraries)*/
       })
-
- 
-      console.log(this.state.libraries)
-    })
-    .catch(error => {
+      .catch(error => {
       // Code for handling errors
-      console.log("ERROR! " + error)
+        console.log("ERROR! " + error)
     })
-
   }
-
-
-
-
 
   searchQuery = (query) => {
       let queryResult = []
@@ -91,11 +82,8 @@ class App extends Component {
 
     return (
       <div className="App">
-       <Map 
-        map = {this.state.map}
-        allLibraries = {this.state.libraries}
-       />
-         <input 
+        <div className="sidebar">
+          <input 
             type="text" 
             placeholder="Search by location name"
             onChange={(e) => this.searchQuery(e.target.value)}
@@ -108,6 +96,11 @@ class App extends Component {
             ))}
           </ol>
         </div>
+        <Map 
+          map = {this.state.map}
+          allLibraries = {this.state.libraries}
+        />
+      </div>
     );
   }
 }

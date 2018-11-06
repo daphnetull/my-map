@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
+import PropTypes from 'prop-types';
 
 
 
@@ -9,11 +10,17 @@ class Marker extends Component {
 		markers: []
 	}
 
+	static propTypes = {
+    allLibraries: PropTypes.array.isRequired,
+    map: PropTypes.object.isRequired
+  }
+
 	componentDidMount(){
-		this.markerEngine()
+		if (this.props.allLibraries.length > 0){
+			this.markerEngine()
+		}
 	}
 	
-
 	markerEngine = () => {
     let markerLocations = this.getLatLng()
     this.setMarkers(markerLocations)
@@ -37,8 +44,7 @@ class Marker extends Component {
       let marker = new window.google.maps.Marker({
         position: {lat: locs[index].lat, lng: locs[index].lng},
         title: this.props.allLibraries.name,
-        id: index,
-        map: this.props.map
+        id: index
       })
       markers.push(marker)
     })
