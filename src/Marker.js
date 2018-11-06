@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 
 
+
 class Marker extends Component {
   
 	state = {
@@ -20,13 +21,12 @@ class Marker extends Component {
 
   getLatLng = () => {
     let locations = []
-
-      locations = this.props.allLibraries.map(library => {
-        let coords = {}
-        coords.name = library.name
-        coords.lat = library.location.lat
-        coords.lng = library.location.lng
-      return coords
+    locations = this.props.allLibraries.map(library => {
+      let coords = {}
+      coords.name = library.name
+      coords.lat = library.location.lat
+      coords.lng = library.location.lng
+    	return coords
     })
     return locations   
   }
@@ -36,8 +36,9 @@ class Marker extends Component {
     this.props.allLibraries.forEach((library,index) => {
       let marker = new window.google.maps.Marker({
         position: {lat: locs[index].lat, lng: locs[index].lng},
-        title: this.state.libraries.name,
+        title: this.props.allLibraries.name,
         id: index,
+        map: this.props.map
       })
       markers.push(marker)
     })

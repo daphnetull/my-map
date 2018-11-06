@@ -48,6 +48,7 @@ class App extends Component {
         libraries: response.data.response.venues,
         originalLibraries: response.data.response.venues
       })
+
  
       console.log(this.state.libraries)
     })

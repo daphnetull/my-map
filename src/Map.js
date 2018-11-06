@@ -37,8 +37,10 @@ class Map extends Component {
       map: map
     })
     console.log(this.state.map)
-/*    this.markerEngine()*/
+    
   }
+
+
 
 
   render() {
