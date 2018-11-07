@@ -16,9 +16,11 @@ class Marker extends Component {
   }
 
 	componentDidMount(){
-		if (this.props.allLibraries.length > 0){
-			this.markerEngine()
+		while(this.props.allLibraries.length < 1){
+			console.log('loading')
 		}
+		this.markerEngine()
+		
 	}
 	
 	markerEngine = () => {

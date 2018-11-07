@@ -4,6 +4,16 @@ import './App.css';
 import Map from './Map'
 
 
+function loadScript(url){
+
+  const firstScript = window.document.querySelector('script');
+  const newScript = window.document.createElement('script');
+  newScript.src = url;
+  newScript.async = newScript.defer = true;
+  firstScript.before(newScript);
+  console.log(url)
+}
+
 class App extends Component {
   
 
@@ -45,13 +55,32 @@ class App extends Component {
         this.setState({
           libraries: response.data.response.venues,
           originalLibraries: response.data.response.venues
-        })
+        },
+        this.srcForMap()
+      )
 /*        console.log(this.state.libraries)*/
       })
       .catch(error => {
       // Code for handling errors
         console.log("ERROR! " + error)
     })
+  }
+
+  srcForMap = () => {
+    loadScript("https://maps.googleapis.com/maps/api/js?key=AIzaSyBguQJWbS48IZPGPRMHUhbU7elhiCd6PFk&v=3&callback=initMap")
+    window.initMap = this.initMap
+  }
+
+  initMap = () => {
+    let map = new window.google.maps.Map(document.getElementById('map'), {
+      center: {lat: 39.768451, lng: -86.070802},
+      zoom: 13
+    })
+    this.setState({
+      map: map
+    })
+    /*console.log(this.props.allLibraries)*/
+    
   }
 
   searchQuery = (query) => {
