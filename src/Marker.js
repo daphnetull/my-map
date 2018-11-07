@@ -11,18 +11,18 @@ class Marker extends Component {
 	}
 
 	static propTypes = {
-    allLibraries: PropTypes.array.isRequired,
-    map: PropTypes.object.isRequired
-  }
+		allLibraries: PropTypes.array.isRequired,
+		map: PropTypes.object.isRequired
+	}
 
 	componentDidMount(){
 		this.markerEngine()		
 	}
 	
 	markerEngine = () => {
-    let markerLocations = this.getLatLng()
-    this.setMarkers(markerLocations)
-  }
+		let markerLocations = this.getLatLng()
+		this.setMarkers(markerLocations)
+	}
 
   getLatLng = () => {
     let locations = []
