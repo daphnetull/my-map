@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
-import Marker from './Marker';
+/*import Marker from './Marker';*/
 import PropTypes from 'prop-types';
 
 
@@ -22,10 +22,7 @@ class Map extends Component {
       <div className="map-container">
         <div id="map"></div>
       	<h3>Map goes here</h3>
-        <Marker 
-          map = {this.props.map}
-          allLibraries = {this.props.allLibraries}
-        />
+
         
       </div>
     );

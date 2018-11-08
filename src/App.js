@@ -21,7 +21,9 @@ class App extends Component {
     map: {},
     libraries: [],
     originalLibraries: [],
-    markers: []
+    libraryIds: [],
+    markers: [],
+    queryResult: []
   }
 
 
@@ -41,7 +43,7 @@ class App extends Component {
       client_secret: "JXCKO13RELKR4EGKMPY2LCKUR5RPZYLHKRL2JIOGSCWFVNJ2",
       query: "Library",
       near: "Indianapolis",
-      v: '20180323'
+      v: '20181104'
     }
 
   // https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
@@ -56,14 +58,59 @@ class App extends Component {
           libraries: response.data.response.venues,
           originalLibraries: response.data.response.venues
         },
+
         this.srcForMap()
+
       )
-/*        console.log(this.state.libraries)*/
+        this.getLibraryIds()
+        console.log(this.state.libraries)
       })
       .catch(error => {
       // Code for handling errors
         console.log("ERROR! " + error)
     })
+
+  }
+
+  getLibraryIds = () => {
+    let idArr = []
+    this.state.originalLibraries.forEach(library => {
+      idArr.push(library.id)
+    })
+    console.log(idArr)
+    this.setState({
+      libraryIds: idArr
+    })
+    this.getPhotos()
+  }
+
+  getPhotos = () => {
+    const endPoints = []
+    this.state.libraryIds.forEach(id => {
+      endPoints.push(`https://api.foursquare.com/v2/venues/${id}/photos?`)
+    })
+    console.log(endPoints)
+    endPoints.forEach(point => {
+      let parameters = {
+        client_id: "VPBZV3MSHPKCLMJOBX5FBFCLRPEQET2EGTC42I34MH20RLY3",
+        client_secret: "JXCKO13RELKR4EGKMPY2LCKUR5RPZYLHKRL2JIOGSCWFVNJ2",
+        v: '20181104'
+      }
+    
+      axios.get(point + new URLSearchParams(parameters))
+        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/then
+        .then(response => {
+          // Code for handling API response         
+          /*console.log(response.data.response.venues[0].location.lat)*/
+          /*console.log('success')*/
+          console.log(response)
+        })
+        .catch(error => {
+        // Code for handling errors
+          console.log("ERROR! " + error)
+      })
+    })
+    
   }
 
   srcForMap = () => {
@@ -79,32 +126,101 @@ class App extends Component {
     this.setState({
       map: map
     })
-    /*console.log(this.props.allLibraries)*/
+    this.markerEngine()
     
+  }
+
+  markerEngine = () => {
+    let markerLocations = this.getLatLng()
+    this.setMarkers(markerLocations)
+    this.createInfoWindows()
+  }
+
+  getLatLng = () => {
+    let locations = []
+    locations = this.state.libraries.map(library => {
+      let coords = {}
+      coords.name = library.name
+      coords.lat = library.location.lat
+      coords.lng = library.location.lng
+      return coords
+    })
+    return locations   
+  }
+
+  setMarkers = (locs) => {
+    let markers = []
+    this.state.libraries.forEach((library,index) => {
+      let marker = new window.google.maps.Marker({
+        position: {lat: locs[index].lat, lng: locs[index].lng},
+        title: library.name,
+        id: index
+      })
+      markers.push(marker)
+    })
+    this.setState({
+      markers: markers
+    })
+    this.setMapOnAll(markers)
+  }
+
+  setMapOnAll = (markers) => {
+    markers.forEach(marker => {
+      let infoWindowContent = 
+      marker.setMap(this.state.map)
+    })
+  }
+
+  createInfoWindows = () => {
+    let infoWindow = new window.google.maps.InfoWindow
+    this.state.markers.forEach((marker,index) => {
+      marker.addListener('click', (e) => {
+        infoWindow.setContent(
+          '<h1>'+marker.title+'</h1>'
+        )
+        infoWindow.open(this.state.map,marker)
+      })
+    })
   }
 
   searchQuery = (query) => {
       let queryResult = []
+      let indexVals = []
       if (!query){
         this.setState({
           libraries: this.state.originalLibraries
         })
-        /*this.srcForMap()*/
+        this.state.markers.forEach(marker => {
+          marker.setVisible(true)
+        })
       }
       else {
-        this.state.libraries.forEach(library => {
+        this.state.libraries.forEach((library, index) => {          
           if(library.name.toLowerCase().includes(query.toLowerCase())){
-            console.log(this.state.libraries)
             queryResult.push(library)
+            indexVals.push(index)
           }
         })
-
+        console.log(indexVals)
         this.setState({
           libraries: queryResult
         })
-
+        this.updateMarkers(queryResult,indexVals)
       }
+
     }
+
+  updateMarkers = (results,indexVals) => {
+    this.state.markers.forEach(marker => {
+      marker.setVisible(false)
+    })
+
+    for (let i=0;i<indexVals.length;i++){
+      this.state.markers[indexVals[i]].setVisible(true)
+    }
+
+
+  }
 
 
   render() {
