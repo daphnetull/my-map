@@ -18,7 +18,7 @@ For this project, I used the following npm packages:
 - [prop-types](https://www.npmjs.com/package/prop-types)
 
 
-##APIS
+## APIS
 
 I used the following APIs:
 - [Google Maps API](https://developers.google.com/maps/documentation)
