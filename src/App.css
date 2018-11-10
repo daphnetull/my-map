@@ -1,11 +1,38 @@
 
-
+/* 
+ * Map styles
+*/
 #map {
   height: 100vh;
   margin: 0;
   padding: 0;
 }
 
+
+/*
+ * Sidebar styles
+*/
+.sidebar {
+  height: 100vh;
+  padding: 10px;
+}
+
+input {
+  display: block;
+  margin: 20px auto;
+  padding: 10px;
+}
+
+.library-address {
+  font-style: italic;
+}
+
+li {
+  margin-bottom: 10px;
+}
+/* 
+ * Footer styles
+*/
 footer {
   background-color: #514E47;
   margin-bottom: 0;
@@ -16,13 +43,6 @@ footer a {
   color: #D6B4DD;
 }
 
-
-*:focus {
-  outline-color: #32CD32;
-  border: 5px solid #32CD32;
-}
-
-
 .footer-text {
   font-size: 1.3em;
   text-align: center;
@@ -31,16 +51,25 @@ footer a {
   padding: 10px;
 }
 
-.sidebar {
-  height: 100vh;
+/*
+ * Accessibility styles
+*/
+*:focus {
+  outline-color: #32CD32;
+  border: 5px solid #32CD32;
 }
 
+/*
+ * Helper classes
+*/
 .hidden {
   display: none;
 }
 
 
-
+/*
+ * Media Queries
+*/
 @media screen and (min-width: 1024px) {
 
   .main-content {
@@ -59,11 +88,6 @@ footer a {
   #map {
     height: 100%;
   }
-
-
-
-
-
 
 }
 

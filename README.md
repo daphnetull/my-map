@@ -1,44 +1,33 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+# Neighborhood Map Project
 
-## Available Scripts
+This is the final project for Udacity's [Front-End Web Developer Nanodegree](https://in.udacity.com/course/front-end-web-developer-nanodegree--nd001-ings) program.  
 
-In the project directory, you can run:
+It's a simple map of some libraries in the Indianapolis metropolitan area.
 
-### `npm start`
+Successful completion of this project requires basic proficiency in the following disciplines:
+- React
+- Google Maps API alongside a third-party API
+- Accessibility
+- Responsiveness
 
-Runs the app in the development mode.<br>
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Dependencies
 
-The page will reload if you make edits.<br>
-You will also see any lint errors in the console.
+For this project, I used the following npm packages:
+- [Create-React-App](https://github.com/facebook/create-react-app)
+- [Axios](https://www.npmjs.com/package/axios)
+- [prop-types](https://www.npmjs.com/package/prop-types)
 
-### `npm test`
 
-Launches the test runner in the interactive watch mode.<br>
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+##APIS
 
-### `npm run build`
+I used the following APIs:
+- [Google Maps API](https://developers.google.com/maps/documentation)
+- [Foursquare API](https://developer.foursquare.com/)
 
-Builds the app for production to the `build` folder.<br>
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## To run project
 
-The build is minified and the filenames include the hashes.<br>
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (Webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+1. Install Create-React-App
+⋅⋅1 npm install -g create-react-app 
+⋅⋅2. Go inside directory of your repo 
+⋅⋅3. Type npm install -g create-react-app into your terminal
+2. Go inside directory where the repo is cloned, and type `npm start`

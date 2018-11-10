@@ -4,6 +4,7 @@ import './App.css';
 import Map from './Map'
 import Sidebar from './Sidebar'
 
+
 /*
  * This function is a work-around to insert the <script> tag into the page
  * as would normally be done according to Google Maps JS API Documentation
@@ -174,14 +175,6 @@ class App extends Component {
     markers.forEach(marker => {
       marker.setMap(this.state.map)
     })
-    this.createTabIndex()
-  }
-
-  createTabIndex = () => {
-    let allMarkersInDom = document.querySelectorAll('img')
-    allMarkersInDom.forEach(marker => {
-      marker.setAttribute('tabindex', 0)
-    })
   }
 
   /*
@@ -210,6 +203,19 @@ class App extends Component {
           '<p>'+this.state.addresses[index][1]+'</p>'
         )
         infoWindow.open(this.state.map,marker)
+        /*
+         * Setting focus on open infowindow
+         * got help from this stackoverflow answer
+         * https://stackoverflow.com/questions/32520538/set-focus-on-google-maps-infowindow-on-marker-mouseover
+        */
+        if (infoWindow.open){
+          let openInfoWindow = document.querySelector('.gm-style-iw')
+          openInfoWindow.setAttribute('tabindex', '0')
+          window.google.maps.event.addListener(infoWindow, 'domready', function(){
+            openInfoWindow.blur();
+            openInfoWindow.focus();
+          });
+        }
       })
     })
   }
@@ -262,10 +268,15 @@ class App extends Component {
   */
   handleListClick = (item) => {
     let allParas = document.querySelectorAll('.hidden')
+    let allListItems = document.querySelectorAll('li')
+    allListItems.forEach(item => {
+      item.setAttribute('aria-expanded','false')
+    })
     allParas.forEach(para => {
       para.style.display = 'none'
     })
     item.querySelector('p').style.display = 'block'
+    item.setAttribute('aria-expanded', 'true')
     let nameOfClickedItem = item.firstChild.data
     let matchedMarker = this.state.markers.filter(marker => marker.title === nameOfClickedItem)
     matchedMarker = matchedMarker[0]

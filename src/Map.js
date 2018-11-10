@@ -20,6 +20,8 @@ class Map extends Component {
       <div className="map-container">
         <div id="map" 
           tabIndex="0"
+          aria-label="location"
+          role="application"
         >
         </div>
 
