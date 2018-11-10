@@ -16,12 +16,12 @@ class Map extends Component {
 
   render() {
 
-    const { map, allLibraries } = this.props
-
     return (
       <div className="map-container">
-        <div id="map"></div>
-      	<h3>Map goes here</h3>
+        <div id="map" 
+          tabIndex="0"
+        >
+        </div>
 
         
       </div>

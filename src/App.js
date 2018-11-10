@@ -2,7 +2,15 @@ import React, { Component } from 'react';
 import axios from 'axios'
 import './App.css';
 import Map from './Map'
+import Sidebar from './Sidebar'
 
+/*
+ * This function is a work-around to insert the <script> tag into the page
+ * as would normally be done according to Google Maps JS API Documentation
+ * https://developers.google.com/maps/documentation/javascript/tutorial
+ * Technique inspired by: https://www.fullstackreact.com/articles/Declaratively_loading_JS_libraries/index.html
+ * and Yahya's walkthrough: https://www.youtube.com/channel/UCcWSbBe_s-T_gZRnqFbtyIA
+*/
 
 function loadScript(url){
 
@@ -11,27 +19,35 @@ function loadScript(url){
   newScript.src = url;
   newScript.async = newScript.defer = true;
   firstScript.before(newScript);
-  console.log(url)
 }
 
 class App extends Component {
   
-
   state = {
     map: {},
     libraries: [],
     originalLibraries: [],
     libraryIds: [],
+    addresses: [],
     markers: [],
-    queryResult: []
+    queryResult: [],
+    isItemClicked: false,
+    clickedItems: []
   }
 
 
   componentDidMount(){
     this.getLibaries()
-    console.log('its mounted')
-  }
 
+    /*
+     * This function runs in the unlikely event that the Google Map experienced an authentication error
+     * https://stackoverflow.com/questions/45633672/detect-query-limit-message-on-map-load-with-google-maps-javascript-api
+     * It's attached to the window object tomake it global
+    */
+    window.gm_authFailure = () =>  { 
+        alert("Google Maps failed to load"); // a very simple alert to the user
+    }
+  }
 
   getLibaries = () => {
     const endPoint = 'https://api.foursquare.com/v2/venues/search?'
@@ -41,101 +57,84 @@ class App extends Component {
     const parameters = {
       client_id: "VPBZV3MSHPKCLMJOBX5FBFCLRPEQET2EGTC42I34MH20RLY3",
       client_secret: "JXCKO13RELKR4EGKMPY2LCKUR5RPZYLHKRL2JIOGSCWFVNJ2",
-      query: "Library",
+      query: "Public Library Marion County",
       near: "Indianapolis",
+      radius: "8000",
       v: '20181104'
     }
 
-  // https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
-  
-    axios.get(endPoint + new URLSearchParams(parameters))
+    /*
+     * Using npm package Axios to help with the fetching
+     * https://www.npmjs.com/package/axios
+    */ 
+    axios.get(endPoint + new URLSearchParams(parameters)) // https://developer.mozilla.org/en-US/docs/Web/API/URLSearchParams
       // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/then
       .then(response => {
-        // Code for handling API response         
-        /*console.log(response.data.response.venues[0].location.lat)*/
-        /*console.log('success')*/
+        // geting the venues, and then storing them as a state         
         this.setState({
           libraries: response.data.response.venues,
           originalLibraries: response.data.response.venues
         },
-
+        // begins to initialize the map
         this.srcForMap()
-
       )
         this.getLibraryIds()
-        console.log(this.state.libraries)
       })
       .catch(error => {
       // Code for handling errors
-        console.log("ERROR! " + error)
+        alert("error: " + error)
     })
-
   }
 
+  /*
+   * This method retrieves the ID numbers of each library.
+  */
   getLibraryIds = () => {
     let idArr = []
     this.state.originalLibraries.forEach(library => {
       idArr.push(library.id)
     })
-    console.log(idArr)
     this.setState({
       libraryIds: idArr
     })
-    this.getPhotos()
+    this.getAddresses()
   }
 
-  getPhotos = () => {
-    const endPoints = []
-    this.state.libraryIds.forEach(id => {
-      endPoints.push(`https://api.foursquare.com/v2/venues/${id}/photos?`)
-    })
-    console.log(endPoints)
-    endPoints.forEach(point => {
-      let parameters = {
-        client_id: "VPBZV3MSHPKCLMJOBX5FBFCLRPEQET2EGTC42I34MH20RLY3",
-        client_secret: "JXCKO13RELKR4EGKMPY2LCKUR5RPZYLHKRL2JIOGSCWFVNJ2",
-        v: '20181104'
-      }
-    
-      axios.get(point + new URLSearchParams(parameters))
-        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/then
-        .then(response => {
-          // Code for handling API response         
-          /*console.log(response.data.response.venues[0].location.lat)*/
-          /*console.log('success')*/
-          console.log(response)
-        })
-        .catch(error => {
-        // Code for handling errors
-          console.log("ERROR! " + error)
-      })
-    })
-    
-  }
-
+  /*
+   * This sends the URL to the loadScript method to insert it into the DOM
+  */
   srcForMap = () => {
     loadScript("https://maps.googleapis.com/maps/api/js?key=AIzaSyBguQJWbS48IZPGPRMHUhbU7elhiCd6PFk&v=3&callback=initMap")
-    window.initMap = this.initMap
+    window.initMap = this.initMap // attaching initMap to window object to make it global
   }
 
+  /*
+   * The actual initMap method to create the map.  It's triggered by the callback in the Google Map URL
+  */
   initMap = () => {
     let map = new window.google.maps.Map(document.getElementById('map'), {
-      center: {lat: 39.768451, lng: -86.070802},
-      zoom: 13
+      center: {lat: 39.7689, lng: -86.1599},
+      zoom: 12
     })
     this.setState({
       map: map
     })
-    this.markerEngine()
-    
+    this.markerEngine()    
   }
 
+  /*
+   * Initiating te methods to create the markers
+  */
   markerEngine = () => {
     let markerLocations = this.getLatLng()
     this.setMarkers(markerLocations)
     this.createInfoWindows()
   }
 
+  /*
+   * a helper function to retrieve just the latitude and longitude of each location for 
+   * for easier marker creation
+  */
   getLatLng = () => {
     let locations = []
     locations = this.state.libraries.map(library => {
@@ -148,13 +147,17 @@ class App extends Component {
     return locations   
   }
 
+  /*
+   * creating the markers
+  */
   setMarkers = (locs) => {
     let markers = []
     this.state.libraries.forEach((library,index) => {
       let marker = new window.google.maps.Marker({
         position: {lat: locs[index].lat, lng: locs[index].lng},
         title: library.name,
-        id: index
+        id: index,
+        icon: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png'
       })
       markers.push(marker)
     })
@@ -164,52 +167,85 @@ class App extends Component {
     this.setMapOnAll(markers)
   }
 
+  /*
+   * This binds all of the markers to the map
+  */
   setMapOnAll = (markers) => {
     markers.forEach(marker => {
-      let infoWindowContent = 
       marker.setMap(this.state.map)
+    })
+    this.createTabIndex()
+  }
+
+  createTabIndex = () => {
+    let allMarkersInDom = document.querySelectorAll('img')
+    allMarkersInDom.forEach(marker => {
+      marker.setAttribute('tabindex', 0)
     })
   }
 
+  /*
+   * digging through the libraries array to find the address of each location
+  */
+  getAddresses = () => {
+    let addressArr = []
+    this.state.libraries.forEach(library => {
+        addressArr.push(library.location.formattedAddress)
+    })
+    this.setState({
+      addresses: addressArr
+    })
+  }
+
+  /*
+   * Creating the Info Windows and populating them with the address of each venue
+  */
   createInfoWindows = () => {
-    let infoWindow = new window.google.maps.InfoWindow
+    let infoWindow = new window.google.maps.InfoWindow()
     this.state.markers.forEach((marker,index) => {
       marker.addListener('click', (e) => {
         infoWindow.setContent(
-          '<h1>'+marker.title+'</h1>'
+          '<h3>'+marker.title+'</h3>'+
+          '<p>'+this.state.addresses[index][0]+'</p>'+
+          '<p>'+this.state.addresses[index][1]+'</p>'
         )
         infoWindow.open(this.state.map,marker)
       })
     })
   }
 
+  /*
+   * Initiated whenever user types into the search box
+  */
   searchQuery = (query) => {
-      let queryResult = []
-      let indexVals = []
-      if (!query){
-        this.setState({
-          libraries: this.state.originalLibraries
-        })
-        this.state.markers.forEach(marker => {
-          marker.setVisible(true)
-        })
-      }
-      else {
-        this.state.libraries.forEach((library, index) => {          
-          if(library.name.toLowerCase().includes(query.toLowerCase())){
-            queryResult.push(library)
-            indexVals.push(index)
-          }
-        })
-        console.log(indexVals)
-        this.setState({
-          libraries: queryResult
-        })
-        this.updateMarkers(queryResult,indexVals)
-      }
-
+    let queryResult = []
+    let indexVals = []
+    if (!query){
+      this.setState({
+        libraries: this.state.originalLibraries
+      })
+      this.state.markers.forEach(marker => {
+        marker.setVisible(true)
+      })
     }
+    else {
+      this.state.originalLibraries.forEach((library, index) => {          
+        if(library.name.toLowerCase().includes(query.toLowerCase())){
+          queryResult.push(library)
+          indexVals.push(index)
+        }
+      })
+      console.log(indexVals)
+      this.setState({
+        libraries: queryResult
+      })
+      this.updateMarkers(queryResult,indexVals)
+    }
+  }
 
+  /*
+   * updating visibility of markers according to the query results
+  */
   updateMarkers = (results,indexVals) => {
     this.state.markers.forEach(marker => {
       marker.setVisible(false)
@@ -218,33 +254,52 @@ class App extends Component {
     for (let i=0;i<indexVals.length;i++){
       this.state.markers[indexVals[i]].setVisible(true)
     }
+  }
 
 
+  /*
+   * initiated whenever a user clicks on an item in the list menu
+  */
+  handleListClick = (item) => {
+    let allParas = document.querySelectorAll('.hidden')
+    allParas.forEach(para => {
+      para.style.display = 'none'
+    })
+    item.querySelector('p').style.display = 'block'
+    let nameOfClickedItem = item.firstChild.data
+    let matchedMarker = this.state.markers.filter(marker => marker.title === nameOfClickedItem)
+    matchedMarker = matchedMarker[0]
+    this.state.markers.forEach(marker => {
+      marker.setIcon('http://maps.google.com/mapfiles/ms/icons/red-dot.png')
+      marker.setAnimation(null)
+    })
+    matchedMarker.setAnimation(window.google.maps.Animation.BOUNCE)
+    matchedMarker.setIcon('http://maps.google.com/mapfiles/ms/icons/green-dot.png')
   }
 
 
   render() {
 
+
     return (
       <div className="App">
-        <div className="sidebar">
-          <input 
-            type="text" 
-            placeholder="Search by location name"
-            onChange={(e) => this.searchQuery(e.target.value)}
+        <div className="main-content">
+          <Sidebar 
+            map = {this.state.map}
+            allLibraries = {this.state.libraries}
+            searchQuery = {this.searchQuery}
+            handleListClick = {this.handleListClick}
           />
-          <ol>
-            {this.state.libraries.map((library) => (
-              <li key={library.id}>
-                {library.name}
-              </li>
-            ))}
-          </ol>
+          <Map 
+            map = {this.state.map}
+            allLibraries = {this.state.libraries}
+          />
         </div>
-        <Map 
-          map = {this.state.map}
-          allLibraries = {this.state.libraries}
-        />
+        <footer>
+          <p className="footer-text">
+            Powered by <a href='https://developers.google.com/maps/documentation/'>Google Maps API</a> and <a href='https://developer.foursquare.com/'>Foursquare</a>
+          </p>
+        </footer>
       </div>
     );
   }
