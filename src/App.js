@@ -1,8 +1,14 @@
 import React, { Component } from 'react';
 import axios from 'axios'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faBars } from '@fortawesome/free-solid-svg-icons'
 import './App.css';
 import Map from './Map'
 import Sidebar from './Sidebar'
+
+library.add(faBars);
+
 
 
 /*
@@ -262,7 +268,6 @@ class App extends Component {
     }
   }
 
-
   /*
    * initiated whenever a user clicks on an item in the list menu
   */
@@ -275,7 +280,7 @@ class App extends Component {
     allParas.forEach(para => {
       para.style.display = 'none'
     })
-    item.querySelector('p').style.display = 'block'
+    item.querySelector('.library-address').style.display = 'block'
     item.setAttribute('aria-expanded', 'true')
     let nameOfClickedItem = item.firstChild.data
     let matchedMarker = this.state.markers.filter(marker => marker.title === nameOfClickedItem)
@@ -288,12 +293,35 @@ class App extends Component {
     matchedMarker.setIcon('http://maps.google.com/mapfiles/ms/icons/green-dot.png')
   }
 
+  /*
+   * Hides and reveals the sidebar if the hamburger icon is clicked
+  */
+  toggleSideBar = () => {
+    let sideBar = document.querySelector('.sidebar')
+    let map = document.querySelector('.map-container')
+    if (sideBar.classList.contains('hidden')){
+      sideBar.classList.remove('hidden')
+      map.classList.remove('center')
+    }
+    else {
+      sideBar.classList.add('hidden')
+      map.classList.add('center')
+    }
+  }
+
 
   render() {
 
 
     return (
       <div className="App">
+        <header>
+          <FontAwesomeIcon
+            icon="bars"
+            className="hamburger-button"
+            onClick={(e) => this.toggleSideBar(e.target)}
+          />
+        </header>
         <div className="main-content">
           <Sidebar 
             map = {this.state.map}

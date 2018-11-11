@@ -23,7 +23,7 @@ class Sidebar extends Component {
           />
           <ol>
             {this.props.allLibraries.map((library) => (
-              <li key={library.id} onClick={(e) => this.props.handleListClick(e.target)} tabIndex="0" aria-expanded="false">
+              <li key={library.id} className="library-list" onClick={(e) => this.props.handleListClick(e.target)} tabIndex="0" aria-expanded="false">
                 {library.name}
                 <p className="hidden library-address" aria-label="address of library">{library.location.formattedAddress[0]}</p>
               </li>
