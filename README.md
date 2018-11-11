@@ -16,9 +16,9 @@ For this project, I used the following npm packages:
 - [Create-React-App](https://github.com/facebook/create-react-app)
 - [Axios](https://www.npmjs.com/package/axios)
 - [prop-types](https://www.npmjs.com/package/prop-types)
+- [react-fontawesome](https://www.npmjs.com/package/@fortawesome/react-fontawesome)
 
-
-## APIS
+##APIS
 
 I used the following APIs:
 - [Google Maps API](https://developers.google.com/maps/documentation)
